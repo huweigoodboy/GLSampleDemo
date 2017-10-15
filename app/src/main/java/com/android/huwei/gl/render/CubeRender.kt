@@ -2,12 +2,14 @@ package com.android.huwei.gl.render
 
 import android.content.Context
 import android.opengl.GLES20
+import android.opengl.GLES20.*
 import android.opengl.GLSurfaceView
+import android.opengl.Matrix
+import android.opengl.Matrix.*
 import com.android.huwei.gl.R
+import com.android.huwei.gl.data.VertexArray
 import com.android.huwei.gl.util.*
 import java.nio.ByteBuffer
-import java.nio.ByteOrder
-import java.nio.FloatBuffer
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
@@ -17,45 +19,100 @@ import javax.microedition.khronos.opengles.GL10
 class CubeRender : GLSurfaceView.Renderer {
     private val U_COLOR = "u_Color"
     private val A_POSITION = "a_Position"
-    private val POSITION_COMPONENT_COUNT = 2
-    private val BYTES_PER_FLOAT = 4
+    private val U_MATRIX = "u_Matrix"
+    private val POSITION_COMPONENT_COUNT = 3
     private var program: Int = 0
     private var uColorLocation: Int = 0
+    private var uMatrixLocation: Int = 0
     private var aPositionLocation: Int = 0
-    private var context : Context
-    var vertexData : FloatBuffer
+    private var context: Context
+
+    private val projectionMatrix = FloatArray(16)
+    private val modelMatrix = FloatArray(16)
+
+    val indexArray: ByteBuffer
+
+    val points: FloatArray = floatArrayOf(
+            // Triangle 1
+            -1f, 1f, 1f, //top-left near
+            1f, 1f, 1f, //top-right near
+            -1f, -1f, 1f, //bottom-left near
+            1f, -1f, 1f, //bottom-right near
+            1f, 1f, -1f, //top-left far
+            1f, 1f, -1f, //top-right far
+            -1f, -1f, -1f, //bottom-left far
+            1f, -1f, -1f //bottom-right near
+    )
 
     constructor(context: Context) {
         this.context = context
+        points.forEachIndexed { index, value ->
+            points.set(index, value * 0.5f)
+        }
 
-        var tableVerticesWithTriangles : FloatArray = floatArrayOf(
-                // Triangle 1
-                -0.5f, -0.5f,
-                0.5f,  0.5f,
-                -0.5f,  0.5f
-        )
+        indexArray = ByteBuffer.allocate(6 * 6).put(byteArrayOf(
+                //front
+                1, 3, 0,
+                0, 3, 2,
 
-        vertexData = ByteBuffer.allocateDirect(tableVerticesWithTriangles.size * BYTES_PER_FLOAT).order(ByteOrder.nativeOrder())
-                .asFloatBuffer()
-        vertexData.put(tableVerticesWithTriangles)
+                //back
+                4, 6, 5,
+                5, 6, 7,
+
+                //left
+                0, 2, 4,
+                4, 2, 6,
+
+                //right
+                5, 7, 1,
+                1, 7, 3,
+
+                //top
+                5, 1, 4,
+                4, 1, 0,
+
+                //bottom
+                6, 2, 7,
+                7, 2, 3
+        ))
+        indexArray.position(0)
     }
 
     override fun onDrawFrame(gl: GL10?) {
         GLES20.glClearColor(0f, 0f, 0f, 0f)
 
-        GLES20.glUniform4f(uColorLocation, 1f, 0f, 1f, 1f)
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 6)
+        // Assign the matrix
+        glUniformMatrix4fv(uMatrixLocation, 1, false, projectionMatrix, 0)
+
+        glUniform4f(uColorLocation, 1f, 0f, 1f, 1f)
+        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_BYTE, indexArray)
     }
 
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
         GLES20.glViewport(0, 0, width, height)
+
+        Matrix.perspectiveM(projectionMatrix, 0, 45f, width.toFloat() / height.toFloat(), 1f, 10f)
+
+        /*
+        setIdentityM(modelMatrix, 0);
+        translateM(modelMatrix, 0, 0f, 0f, -2f);
+        */
+
+        setIdentityM(modelMatrix, 0)
+
+//        translateM(modelMatrix, 0, 0f, 0f, -2.5f)
+//        rotateM(modelMatrix, 0, -60f, 1f, 1f, 0f)
+
+        val temp = FloatArray(16)
+        multiplyMM(temp, 0, projectionMatrix, 0, modelMatrix, 0)
+        System.arraycopy(temp, 0, projectionMatrix, 0, temp.size)
     }
 
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
         GLES20.glClearColor(0f, 0f, 0f, 0f)
 
-        val vertexShaderSource : String = readTextFileFromResource(context, R.raw.triangle_vertex_shader)
-        val fragmentShaderSource : String = readTextFileFromResource(context, R.raw.triangle_fragment_shader)
+        val vertexShaderSource: String = readTextFileFromResource(context, R.raw.cube_vertex_shader)
+        val fragmentShaderSource: String = readTextFileFromResource(context, R.raw.cube_fragment_shader)
 
         //编译
         val vertexShader = compileVertexShader(vertexShaderSource)
@@ -72,11 +129,9 @@ class CubeRender : GLSurfaceView.Renderer {
 
         aPositionLocation = GLES20.glGetAttribLocation(program, A_POSITION)
         uColorLocation = GLES20.glGetUniformLocation(program, U_COLOR)
+        uMatrixLocation = glGetUniformLocation(program, U_MATRIX)
 
-        vertexData.position(0)
-        GLES20.glVertexAttribPointer(aPositionLocation, POSITION_COMPONENT_COUNT, GLES20.GL_FLOAT,
-                false, 0, vertexData)
-
-        GLES20.glEnableVertexAttribArray(aPositionLocation)
+        var verticeArray: VertexArray = VertexArray(points)
+        verticeArray.setVertexAttribPointer(0, aPositionLocation, POSITION_COMPONENT_COUNT, 0)
     }
 }
