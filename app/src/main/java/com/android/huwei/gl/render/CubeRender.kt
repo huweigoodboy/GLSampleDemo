@@ -38,40 +38,49 @@ class CubeRender : GLSurfaceView.Renderer {
             1f, 1f, 1f, //top-right near
             -1f, -1f, 1f, //bottom-left near
             1f, -1f, 1f, //bottom-right near
-            1f, 1f, -1f, //top-left far
+            -1f, 1f, -1f, //top-left far
             1f, 1f, -1f, //top-right far
             -1f, -1f, -1f, //bottom-left far
             1f, -1f, -1f //bottom-right near
     )
 
+    val faceColors : FloatArray = floatArrayOf(
+            0f,1f,0f,1f,
+            0f,1f,0f,1f,
+            0f,1f,0f,1f,
+            0f,1f,0f,1f,
+            1f,0f,0f,1f,
+            1f,0f,0f,1f
+    )
+
     constructor(context: Context) {
         this.context = context
         points.forEachIndexed { index, value ->
-            points.set(index, value * 0.5f)
+            points.set(index, value * 0.2f)
         }
 
         indexArray = ByteBuffer.allocate(6 * 6).put(byteArrayOf(
-                //front
+                // Front
                 1, 3, 0,
                 0, 3, 2,
 
-                //back
+                // Back
                 4, 6, 5,
                 5, 6, 7,
 
-                //left
+                // Left
                 0, 2, 4,
                 4, 2, 6,
 
-                //right
+                // Right
                 5, 7, 1,
                 1, 7, 3,
 
-                //top
+                // Top
                 5, 1, 4,
                 4, 1, 0,
 
-                //bottom
+                // Bottom
                 6, 2, 7,
                 7, 2, 3
         ))
@@ -84,7 +93,7 @@ class CubeRender : GLSurfaceView.Renderer {
         // Assign the matrix
         glUniformMatrix4fv(uMatrixLocation, 1, false, projectionMatrix, 0)
 
-        glUniform4f(uColorLocation, 1f, 0f, 1f, 1f)
+        glUniform4fv(uColorLocation,  4, faceColors, 0)
         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_BYTE, indexArray)
     }
 
@@ -100,8 +109,8 @@ class CubeRender : GLSurfaceView.Renderer {
 
         setIdentityM(modelMatrix, 0)
 
-//        translateM(modelMatrix, 0, 0f, 0f, -2.5f)
-//        rotateM(modelMatrix, 0, -60f, 1f, 1f, 0f)
+        translateM(modelMatrix, 0, 0f, 0f, -2.5f)
+        rotateM(modelMatrix, 0, -60f, 1f, 1f, 0f)
 
         val temp = FloatArray(16)
         multiplyMM(temp, 0, projectionMatrix, 0, modelMatrix, 0)
@@ -131,7 +140,7 @@ class CubeRender : GLSurfaceView.Renderer {
         uColorLocation = GLES20.glGetUniformLocation(program, U_COLOR)
         uMatrixLocation = glGetUniformLocation(program, U_MATRIX)
 
-        var verticeArray: VertexArray = VertexArray(points)
+        var verticeArray = VertexArray(points)
         verticeArray.setVertexAttribPointer(0, aPositionLocation, POSITION_COMPONENT_COUNT, 0)
     }
 }
