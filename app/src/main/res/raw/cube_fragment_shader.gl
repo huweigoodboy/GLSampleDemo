@@ -1,11 +1,10 @@
 precision mediump float;
 
-uniform vec4 u_Color[6];
+varying vec4 face_Color;
+
 
 void main()
 {
-    gl_FragColor = u_Color[3];
-//    for (int i=0; i<12; i++) {
-//        gl_FragData[i] = u_Color[i/2];
-//    }
+    gl_FragColor = face_Color;
+//    gl_FragColor = u_Color[3];
 }

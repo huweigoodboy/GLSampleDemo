@@ -1,8 +1,28 @@
 uniform mat4 u_Matrix;
 
 attribute vec4 a_Position;
+varying vec4 face_Color;
+uniform vec4 u_Color[6];
 
 void main() {
     gl_Position = u_Matrix * a_Position;
     gl_PointSize = 10.0;
+
+    float ratio = 0.2;
+
+    if (a_Position[0] == 1.0 * ratio) {
+        face_Color = u_Color[0];
+    } else if (a_Position[0] == -1.0 * ratio) {
+        face_Color = u_Color[1];
+    } else if (a_Position[1] == 1.0 * ratio) {
+        face_Color = u_Color[2];
+    } else if (a_Position[1] == -1.0 * ratio) {
+        face_Color = u_Color[3];
+    } else if (a_Position[2] == 1.0 * ratio) {
+         face_Color = u_Color[4];
+    } else if (a_Position[2] == -1.0 * ratio) {
+        face_Color = u_Color[5];
+    }else {
+        face_Color = u_Color[0];
+    }
 }

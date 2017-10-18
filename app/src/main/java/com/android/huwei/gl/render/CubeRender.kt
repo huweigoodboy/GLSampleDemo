@@ -44,13 +44,13 @@ class CubeRender : GLSurfaceView.Renderer {
             1f, -1f, -1f //bottom-right near
     )
 
-    val faceColors : FloatArray = floatArrayOf(
-            0f,1f,0f,1f,
-            0f,1f,0f,1f,
-            0f,1f,0f,1f,
-            0f,1f,0f,1f,
-            1f,0f,0f,1f,
-            1f,0f,0f,1f
+    val faceColors: FloatArray = floatArrayOf(
+            1f, 0f, 0f, 0f,
+            0f, 1f, 0f, 0f,
+            0f, 0f, 1f, 0f,
+            1f, 0f, 1f, 0f,
+            1f, 1f, 0f, 0f,
+            0f, 0f, 1f, 0f
     )
 
     constructor(context: Context) {
@@ -93,7 +93,7 @@ class CubeRender : GLSurfaceView.Renderer {
         // Assign the matrix
         glUniformMatrix4fv(uMatrixLocation, 1, false, projectionMatrix, 0)
 
-        glUniform4fv(uColorLocation,  4, faceColors, 0)
+        glUniform4fv(uColorLocation, 4, faceColors, 0)
         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_BYTE, indexArray)
     }
 
@@ -109,8 +109,8 @@ class CubeRender : GLSurfaceView.Renderer {
 
         setIdentityM(modelMatrix, 0)
 
-        translateM(modelMatrix, 0, 0f, 0f, -2.5f)
-        rotateM(modelMatrix, 0, -60f, 1f, 1f, 0f)
+        translateM(modelMatrix, 0, 0f, 0f, -2f)
+        rotateM(modelMatrix, 0, -60f, 1f, 0f, 0f)
 
         val temp = FloatArray(16)
         multiplyMM(temp, 0, projectionMatrix, 0, modelMatrix, 0)
