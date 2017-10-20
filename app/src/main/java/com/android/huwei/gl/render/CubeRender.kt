@@ -30,6 +30,12 @@ class CubeRender : GLSurfaceView.Renderer {
     private val projectionMatrix = FloatArray(16)
     private val modelMatrix = FloatArray(16)
 
+    var mAngleX : Float = 0.toFloat()
+    var mAngleY : Float = 0.toFloat()
+
+    var ratio : Float = 0.toFloat()
+
+
     val indexArray: ByteBuffer
 
     val points: FloatArray = floatArrayOf(
@@ -88,7 +94,26 @@ class CubeRender : GLSurfaceView.Renderer {
     }
 
     override fun onDrawFrame(gl: GL10?) {
-        GLES20.glClearColor(0f, 0f, 0f, 0f)
+        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
+
+        Matrix.perspectiveM(projectionMatrix, 0, 45f, ratio, 1f, 10f)
+        setIdentityM(modelMatrix, 0)
+
+        translateM(modelMatrix, 0, 0f, 0f, -2f)
+        rotateM(modelMatrix, 0, mAngleX, 0f, 1f, 0f)
+        rotateM(modelMatrix, 0, mAngleY, 1f, 0f, 0f)
+
+
+        val temp = FloatArray(16)
+        multiplyMM(temp, 0, projectionMatrix, 0, modelMatrix, 0)
+        System.arraycopy(temp, 0, projectionMatrix, 0, temp.size)
+
+        aPositionLocation = glGetAttribLocation(program, A_POSITION)
+        uColorLocation = glGetUniformLocation(program, U_COLOR)
+        uMatrixLocation = glGetUniformLocation(program, U_MATRIX)
+
+        var verticeArray = VertexArray(points)
+        verticeArray.setVertexAttribPointer(0, aPositionLocation, POSITION_COMPONENT_COUNT, 0)
 
         // Assign the matrix
         glUniformMatrix4fv(uMatrixLocation, 1, false, projectionMatrix, 0)
@@ -100,21 +125,17 @@ class CubeRender : GLSurfaceView.Renderer {
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
         GLES20.glViewport(0, 0, width, height)
 
-        Matrix.perspectiveM(projectionMatrix, 0, 45f, width.toFloat() / height.toFloat(), 1f, 10f)
+        ratio = width.toFloat() / height.toFloat()
 
-        /*
-        setIdentityM(modelMatrix, 0);
-        translateM(modelMatrix, 0, 0f, 0f, -2f);
-        */
 
-        setIdentityM(modelMatrix, 0)
-
-        translateM(modelMatrix, 0, 0f, 0f, -2f)
-        rotateM(modelMatrix, 0, -60f, 1f, 0f, 0f)
-
-        val temp = FloatArray(16)
-        multiplyMM(temp, 0, projectionMatrix, 0, modelMatrix, 0)
-        System.arraycopy(temp, 0, projectionMatrix, 0, temp.size)
+//        setIdentityM(modelMatrix, 0)
+//
+//        translateM(modelMatrix, 0, 0f, 0f, -2f)
+//        rotateM(modelMatrix, 0, 60f, 1f, 0f, 0f)
+//
+//        val temp = FloatArray(16)
+//        multiplyMM(temp, 0, projectionMatrix, 0, modelMatrix, 0)
+//        System.arraycopy(temp, 0, projectionMatrix, 0, temp.size)
     }
 
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
@@ -135,12 +156,13 @@ class CubeRender : GLSurfaceView.Renderer {
 
         //装载
         GLES20.glUseProgram(program)
+    }
 
-        aPositionLocation = GLES20.glGetAttribLocation(program, A_POSITION)
-        uColorLocation = GLES20.glGetUniformLocation(program, U_COLOR)
-        uMatrixLocation = glGetUniformLocation(program, U_MATRIX)
-
-        var verticeArray = VertexArray(points)
-        verticeArray.setVertexAttribPointer(0, aPositionLocation, POSITION_COMPONENT_COUNT, 0)
+    fun handleTouch() {
+//        rotateM(modelMatrix, 0, 120f, 1f, 0f, 0f)
+//
+//        val temp = FloatArray(16)
+//        multiplyMM(temp, 0, projectionMatrix, 0, modelMatrix, 0)
+//        System.arraycopy(temp, 0, projectionMatrix, 0, temp.size)
     }
 }

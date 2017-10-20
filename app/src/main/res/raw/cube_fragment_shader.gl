@@ -1,10 +1,22 @@
 precision mediump float;
-
-varying vec4 face_Color;
-
+uniform vec4 u_Color[6];
 
 void main()
 {
-    gl_FragColor = face_Color;
-//    gl_FragColor = u_Color[3];
+    float ratio = 0.2;
+    if (gl_FragCoord.x == 1.0 * ratio) {
+        gl_FragColor = u_Color[0];
+    } else if (gl_FragCoord.x == -1.0 * ratio) {
+        gl_FragColor = u_Color[0];
+    } else if (gl_FragCoord.y == 1.0 * ratio) {
+        gl_FragColor = u_Color[1];
+    } else if (gl_FragCoord.y == -1.0 * ratio) {
+        gl_FragColor = u_Color[1];
+    } else if (gl_FragCoord.z == 1.0 * ratio) {
+         gl_FragColor = u_Color[2];
+    } else if (gl_FragCoord.z == -1.0 * ratio) {
+        gl_FragColor = u_Color[2];
+    }else {
+        gl_FragColor = u_Color[3];
+    }
 }
