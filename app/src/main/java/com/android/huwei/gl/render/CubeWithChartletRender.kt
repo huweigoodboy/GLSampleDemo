@@ -16,16 +16,18 @@ import javax.microedition.khronos.opengles.GL10
 /**
  * Created by huwei on 17-6-1.
  */
-class CubeRender : GLSurfaceView.Renderer {
-    private val U_COLOR = "u_Color"
+class CubeWithChartletRender : GLSurfaceView.Renderer {
     private val A_POSITION = "a_Position"
     private val U_MATRIX = "u_Matrix"
+    private val U_TEXTURE_UNIT = "u_TextureUnit"
     private val POSITION_COMPONENT_COUNT = 3
     private var program: Int = 0
-    private var uColorLocation: Int = 0
     private var uMatrixLocation: Int = 0
     private var aPositionLocation: Int = 0
+    private var uTextureUnitLocation : Int = 0
     private var context: Context
+
+    private var cubeTexture: Int = 0
 
     private val projectionMatrix = FloatArray(16)
     private val modelMatrix = FloatArray(16)
@@ -50,13 +52,13 @@ class CubeRender : GLSurfaceView.Renderer {
             1f, -1f, -1f //bottom-right near
     )
 
-    val faceColors: FloatArray = floatArrayOf(
-            1f, 0f, 0f, 0f,
-            0f, 1f, 0f, 0f,
-            0f, 0f, 1f, 0f,
-            1f, 0f, 1f, 0f,
-            1f, 1f, 0f, 0f,
-            0f, 1f, 1f, 0f
+    val cubeChartletArray : IntArray = intArrayOf(
+            R.mipmap.cube1,
+            R.mipmap.cube2,
+            R.mipmap.cube3,
+            R.mipmap.cube4,
+            R.mipmap.cube5,
+            R.mipmap.cube6
     )
 
     constructor(context: Context) {
@@ -109,7 +111,6 @@ class CubeRender : GLSurfaceView.Renderer {
         System.arraycopy(temp, 0, projectionMatrix, 0, temp.size)
 
         aPositionLocation = glGetAttribLocation(program, A_POSITION)
-        uColorLocation = glGetUniformLocation(program, U_COLOR)
         uMatrixLocation = glGetUniformLocation(program, U_MATRIX)
 
         var verticeArray = VertexArray(points)
@@ -118,7 +119,10 @@ class CubeRender : GLSurfaceView.Renderer {
         // Assign the matrix
         glUniformMatrix4fv(uMatrixLocation, 1, false, projectionMatrix, 0)
 
-        glUniform4fv(uColorLocation, 6, faceColors, 0)
+        glActiveTexture(GL_TEXTURE0)
+        glBindTexture(GL_TEXTURE_CUBE_MAP, cubeTexture)
+        glUniform1i(uTextureUnitLocation, 0)
+
         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_BYTE, indexArray)
     }
 
@@ -133,8 +137,8 @@ class CubeRender : GLSurfaceView.Renderer {
         GLES20.glEnable(GLES20.GL_CULL_FACE) //开启剔除功能，默认剔除背面
         glFrontFace(GL_CW)  //设置顺时针是正面
 
-        val vertexShaderSource: String = readTextFileFromResource(context, R.raw.cube_vertex_shader)
-        val fragmentShaderSource: String = readTextFileFromResource(context, R.raw.cube_fragment_shader)
+        val vertexShaderSource: String = readTextFileFromResource(context, R.raw.cubechartlet_vertex_shader)
+        val fragmentShaderSource: String = readTextFileFromResource(context, R.raw.cubechartlet_fragment_shader)
 
         //编译
         val vertexShader = compileVertexShader(vertexShaderSource)
@@ -148,6 +152,9 @@ class CubeRender : GLSurfaceView.Renderer {
 
         //装载
         GLES20.glUseProgram(program)
+
+        cubeTexture = loadCubeMap(context, cubeChartletArray)
+        uTextureUnitLocation = glGetUniformLocation(program, U_TEXTURE_UNIT)
     }
 
     fun handleTouch() {

@@ -38,6 +38,11 @@ class MainActivity : AppCompatActivity() {
         clickItem.title = "Cube"
         clickItem.listener = View.OnClickListener { startActivity(Intent(this, CubeActivity::class.java)) }
         adapter.data.add(clickItem)
+
+        clickItem = ClickItem()
+        clickItem.title = "CubeWithChartlet"
+        clickItem.listener = View.OnClickListener { startActivity(Intent(this, CubeWithChartletActivity::class.java)) }
+        adapter.data.add(clickItem)
     }
 
     inner class MyAdapter : RecyclerView.Adapter<ViewHolder>() {

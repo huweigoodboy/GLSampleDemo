@@ -17,7 +17,7 @@ class TriangleActivity : AppCompatActivity() {
         glSurfaceView = GLSurfaceView(this)
         setContentView(glSurfaceView)
 
-        glSurfaceView.setEGLContextClientVersion(3)
+        glSurfaceView.setEGLContextClientVersion(2)
         glSurfaceView.setRenderer(TriangleRender(this))
     }
 }

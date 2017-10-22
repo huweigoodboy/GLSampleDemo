@@ -1,0 +1,8 @@
+precision mediump float;
+varying vec3 v_Position;
+uniform samplerCube u_TextureUnit;
+
+void main()
+{
+	gl_FragColor = textureCube(u_TextureUnit, v_Position);
+}

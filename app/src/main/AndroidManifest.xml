@@ -21,6 +21,7 @@
         <activity android:name=".TriangleActivity" />
         <activity android:name=".RectangleActivity"/>
         <activity android:name=".CubeActivity" />
+        <activity android:name=".CubeWithChartletActivity" />
     </application>
 
 </manifest>

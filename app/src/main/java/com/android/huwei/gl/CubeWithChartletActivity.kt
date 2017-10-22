@@ -5,25 +5,26 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.MotionEvent
 import android.view.View
-import com.android.huwei.gl.render.CubeRender
+import com.android.huwei.gl.render.CubeWithChartletRender
 
 /**
- * Created by huwei on 17-9-27.
+ *
+ * @author Ezio
+ * @date 2017/10/22
  */
-class CubeActivity : AppCompatActivity() {
+class CubeWithChartletActivity : AppCompatActivity() {
     private val TOUCH_SCALE_FACTOR = 180.0f / 320
     private var mPreviousX: Float = 0.toFloat()
     private var mPreviousY: Float = 0.toFloat()
-    lateinit var mRenderer : CubeRender
+    lateinit var mRenderer : CubeWithChartletRender
     lateinit var glSurfaceView: GLSurfaceView
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         glSurfaceView = GLSurfaceView(this)
         setContentView(glSurfaceView)
 
-        mRenderer = CubeRender(this)
+        mRenderer = CubeWithChartletRender(this)
 
         glSurfaceView.setEGLContextClientVersion(2)
         glSurfaceView.setRenderer(mRenderer)
