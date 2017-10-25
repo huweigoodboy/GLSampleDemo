@@ -1,0 +1,18 @@
+precision mediump float;
+uniform vec4 u_Color[6];
+uniform vec3 u_LightDirection;
+
+uniform samplerCube u_TextureUnit;
+varying vec3 v_Position;
+
+void main()
+{
+    gl_FragColor = textureCube(u_TextureUnit, v_Position);
+    vec3 vDirctionNormal = normalize(vec3(gl_FragCoord.x, gl_FragCoord.y, gl_FragCoord.z));
+
+    vec3 u_LightColor = vec3(0.94, 0.55, 0);    //平行光
+    vec3 u_Ambient = vec3(0.15, 0.15, 0.15);  //环境光
+    float diffuse = max(0.0,dot(vDirctionNormal, u_LightDirection));  //漫反射亮度值
+    vec3 scatteredLight = u_Ambient.rgb + u_LightColor * diffuse;  //漫反射光照
+    gl_FragColor.rgb = min(gl_FragColor.rgb * scatteredLight, vec3(1.0));
+}

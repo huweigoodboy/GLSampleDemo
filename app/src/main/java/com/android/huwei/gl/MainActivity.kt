@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
         mRecyclerView.adapter = adapter
 
         //init Data
-        var clickItem: ClickItem = ClickItem()
+        var clickItem = ClickItem()
         clickItem.title = "Triangle"
         clickItem.listener = View.OnClickListener { startActivity(Intent(this, TriangleActivity::class.java)) }
         adapter.data.add(clickItem)
@@ -42,6 +42,11 @@ class MainActivity : AppCompatActivity() {
         clickItem = ClickItem()
         clickItem.title = "CubeWithChartlet"
         clickItem.listener = View.OnClickListener { startActivity(Intent(this, CubeWithChartletActivity::class.java)) }
+        adapter.data.add(clickItem)
+
+        clickItem = ClickItem()
+        clickItem.title = "CubeLight"
+        clickItem.listener = View.OnClickListener { startActivity(Intent(this, CubeLightActivity::class.java)) }
         adapter.data.add(clickItem)
     }
 
