@@ -19,5 +19,7 @@ class TriangleActivity : AppCompatActivity() {
 
         glSurfaceView.setEGLContextClientVersion(2)
         glSurfaceView.setRenderer(TriangleRender(this))
+        glSurfaceView.renderMode = GLSurfaceView.RENDERMODE_WHEN_DIRTY
+
     }
 }

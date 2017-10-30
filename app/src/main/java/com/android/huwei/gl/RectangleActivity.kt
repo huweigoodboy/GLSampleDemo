@@ -20,5 +20,6 @@ class RectangleActivity : AppCompatActivity() {
 
         glSurfaceView.setEGLContextClientVersion(2)
         glSurfaceView.setRenderer(RectangleRender(this))
+        glSurfaceView.renderMode = GLSurfaceView.RENDERMODE_WHEN_DIRTY
     }
 }
